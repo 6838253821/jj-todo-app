@@ -32,6 +32,26 @@ without deleting data. A random session signing key is retained in
 Tests use temporary databases and real CSRF-protected forms. They cover password
 hashing, login/logout, validation, task actions, HTML escaping, and user isolation.
 
-The Flask server is for local development. No deployment is configured. Public
-hosting would require HTTPS, secure cookies, a production WSGI server, login rate
-limiting, and database backups.
+## Vercel
+
+The root `index.py` exports the Flask `app` for Vercel's Flask framework detection
+and initializes missing database tables without deleting existing data. Select
+the Flask framework preset and use this repository root as the project root.
+No custom build or output directory is needed.
+
+Before deployment, set `TODO_SECRET_KEY` to a securely generated random value in
+Vercel's environment settings. Generate it with
+`python3 -c 'import secrets; print(secrets.token_hex(32))'`. Keep it secret and
+stable across instances. Vercel sessions use HTTPS-only cookies.
+
+**SQLite on Vercel is demo-only.** When `VERCEL=1`, the app stores its database in
+the writable temporary directory (`/tmp/jj-todo-app`), because deployed source
+files are read-only. Temporary storage is not durable or shared across function
+instances: users and tasks may disappear on cold starts or redeploys, and different
+instances can have different data. For reliable accounts and task persistence,
+host this SQLite app on a server with a persistent disk, or separately migrate
+to a shared database suitable for Vercel. Local storage remains in `instance/`.
+
+The local Flask server is for development. Public hosting also needs login rate
+limiting and a database backup strategy. Adding this entrypoint does not deploy
+the app.
