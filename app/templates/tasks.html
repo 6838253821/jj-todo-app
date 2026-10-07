@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="heading"><h1>Your tasks</h1><p class="muted">One thing at a time.</p></div>
+<form class="add card" action="{{ url_for('tasks.add') }}" method="post">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <label class="sr-only" for="title">New task</label><input id="title" name="title" placeholder="What needs to get done?" maxlength="200" required><button>Add task</button>
+</form>
+<ul class="task-list">
+{% for task in tasks %}
+  <li class="card task {% if task['completed'] %}completed{% endif %}">
+    <span class="task-title">{{ task['title'] }}</span>
+    <div class="actions">{% if task['completed'] %}<span class="badge">Completed</span>{% else %}
+    <form action="{{ url_for('tasks.complete', task_id=task['id']) }}" method="post"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="secondary" aria-label="Complete {{ task['title'] }}">Complete</button></form>{% endif %}
+    <form action="{{ url_for('tasks.delete', task_id=task['id']) }}" method="post"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="danger" aria-label="Delete {{ task['title'] }}">Delete</button></form></div>
+  </li>
+{% else %}<li class="empty card"><h2>A fresh start</h2><p class="muted">Add your first task above.</p></li>{% endfor %}
+</ul>
+{% endblock %}

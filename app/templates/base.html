@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}My tasks{% endblock %} · Todo</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <header><a class="brand" href="{{ url_for('tasks.index') }}">✓ Todo</a>
+  {% if g.user %}<div class="account"><span>{{ g.user['username'] }}</span>
+    <form action="{{ url_for('auth.logout') }}" method="post"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="secondary">Log out</button></form>
+  </div>{% endif %}</header>
+  <main>
+    {% for category, message in get_flashed_messages(with_categories=true) %}<p class="notice {{ category }}" role="alert">{{ message }}</p>{% endfor %}
+    {% block content %}{% endblock %}
+  </main>
+</body>
+</html>
